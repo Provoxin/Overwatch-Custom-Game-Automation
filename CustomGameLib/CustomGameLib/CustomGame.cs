@@ -71,6 +71,7 @@ namespace Deltin.CustomGameAutomation
             AI = new AI(this);
             Chat = new Chat(this);
             Pause = new Pause(this);
+            ChatError = new ChatError(this);
             PlayerInfo = new PlayerInfo(this);
             Interact = new Interact(this);
             Settings = new Settings(this);

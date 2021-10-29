@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="AI.cs" />
     <Compile Include="Chat.cs" />
+    <Compile Include="ChatError.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="ColorChecking.cs" />
     <Compile Include="Commands.cs" />
