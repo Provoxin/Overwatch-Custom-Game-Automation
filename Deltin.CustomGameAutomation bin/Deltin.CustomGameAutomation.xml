@@ -19,6 +19,11 @@
             Chat for Overwatch.
             </summary>
         </member>
+        <member name="P:Deltin.CustomGameAutomation.CustomGame.ChatError">
+            <summary>
+            Chat error detection for Overwatch.
+            </summary>
+        </member>
         <member name="P:Deltin.CustomGameAutomation.CustomGame.Commands">
             <summary>
             Chat commands for Overwatch.
@@ -969,6 +974,30 @@
             <summary>
             Makes the chat closed by default.
             </summary>
+        </member>
+        <member name="T:Deltin.CustomGameAutomation.ChatError">
+            <summary>
+            Chat error detection for Overwatch.
+            </summary>
+            <remarks>
+            The ChatError class is accessed in a CustomGame object on the <see cref="P:Deltin.CustomGameAutomation.CustomGame.ChatError"/> field.
+            </remarks>
+        </member>
+        <member name="M:Deltin.CustomGameAutomation.ChatError.LastMessageIsError(System.Int32)">
+            <summary>
+            Checks for an error in the chat.
+            </summary>
+            <param name="lines">How many lines the error has. 0 to check all possible lengths.</param>
+            <returns>Returns true if the latest message in the chat is an error.</returns>
+        </member>
+        <member name="M:Deltin.CustomGameAutomation.ChatError.WaitForError(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Waits until an error to appear in the chat.
+            </summary>
+            <param name="timeout">How long to check for an error, in milliseconds. -1 for no timeout.</param>
+            <param name="interval">How often to check for an error, in milliseconds.</param>
+            <param name="lines">How many lines the error has. 0 to check all possible lengths.</param>
+            <returns>Returns true if an error appears before timeout.</returns>
         </member>
         <member name="T:Deltin.CustomGameAutomation.Commands">
             <summary>
