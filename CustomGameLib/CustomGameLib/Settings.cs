@@ -642,10 +642,11 @@ namespace Deltin.CustomGameAutomation
         /// <param name="code">The code to import.</param>
         /// <param name="script">The variable which the script will be output to. Null on import failure.</param>
         /// <param name="restoreOnFail">If true, the original script will be restored if the import fails.</param>
+        /// <param name="timeout">How many milliseconds to attempt copying the mode's script for after a succesful import.</param>
         /// <returns>Will return true if importing was successful. Will return false if the code was already loaded or the code does not exist.</returns>
-        public bool ImportScript(string code, out string script, bool restoreOnFail = true) => ImportScript(code, out script, restoreOnFail, true);
+        public bool ImportScript(string code, out string script, bool restoreOnFail = true, int timeout = 10000) => ImportScript(code, out script, restoreOnFail, timeout, true);
 
-        private bool ImportScript(string code, out string script, bool restoreOnFail, bool goToSettings)
+        private bool ImportScript(string code, out string script, bool restoreOnFail, int timeout, bool goToSettings)
         {
             if (goToSettings) cg.GoToSettings();
 
@@ -682,7 +683,7 @@ namespace Deltin.CustomGameAutomation
                 });
                 
                 // Give up after 10 seconds.
-                wasSuccessful = copyScriptTask.Wait(10000);
+                wasSuccessful = copyScriptTask.Wait(timeout);
                 if (wasSuccessful) script = s;
                 else
                 {
