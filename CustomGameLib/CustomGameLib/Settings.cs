@@ -6,6 +6,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Deltin.CustomGameAutomation
 {
@@ -605,15 +606,16 @@ namespace Deltin.CustomGameAutomation
         /// <param name="code">The code to import.</param>
         /// <param name="testIfSuccessful">If true, the method will test if importing the code was successful. Will take more time.</param>
         /// <returns>Will return true if importing was successful. Will return false if the code was already loaded or the code does not exist.</returns>
-        public bool Import(string code, bool testIfSuccessful = true)
-        {
-            cg.GoToSettings();
+        public bool Import(string code, bool testIfSuccessful = true) => Import(code, testIfSuccessful, true);
 
-            string initialScript = null;
+        private bool Import(string code, bool testIfSuccessful, bool goToSettings)
+        {
+            if (goToSettings) cg.GoToSettings();
+
             if (testIfSuccessful)
             {
-                initialScript = GetScript(false);
-                SetScript(IMPORT_TEST, false);
+                // Create a separator to move the error up so it isn't detected again.
+                if (cg.ChatError.LastMessageIsError(1)) { cg.Chat.SendChatMessage("<ERROR CLEAR>"); }
             }
 
             // Import the code.
@@ -622,29 +624,78 @@ namespace Deltin.CustomGameAutomation
             cg.KeyPress(Keys.Enter);
 
             // Test if the import was successful.
-            bool wasSuccessful = false;
+            bool wasSuccessful;
             if (testIfSuccessful)
             {
-                // Loop for three seconds, keeping track of current time with i (100ms for GetScript() to return)
-                for (int i = 0; i < 3000; i += 100 + 150)
-                {
-                    Thread.Sleep(150);
-                    if (GetScript(false) != IMPORT_TEST)
-                    {
-                        wasSuccessful = true;
-                        break;
-                    }
-                }
-
-                if (!wasSuccessful)
-                    SetScript(initialScript, false);
+                wasSuccessful = !cg.ChatError.WaitForError(1000);
             }
             else wasSuccessful = true;
 
-            cg.GoBack(1);
+            if (goToSettings) cg.GoBack(1);
 
             return wasSuccessful;
         }
+
+        /// <summary>
+        /// Imports a custom game code and retrieves its script.
+        /// </summary>
+        /// <param name="code">The code to import.</param>
+        /// <param name="script">The variable which the script will be output to. Null on import failure.</param>
+        /// <param name="restoreOnFail">If true, the original script will be restored if the import fails.</param>
+        /// <returns>Will return true if importing was successful. Will return false if the code was already loaded or the code does not exist.</returns>
+        public bool ImportScript(string code, out string script, bool restoreOnFail = true) => ImportScript(code, out script, restoreOnFail, true);
+
+        private bool ImportScript(string code, out string script, bool restoreOnFail, bool goToSettings)
+        {
+            if (goToSettings) cg.GoToSettings();
+
+            script = null;
+            string initialScript = null;
+
+            // Create a separator to move the error up so it isn't detected again.
+            if (cg.ChatError.LastMessageIsError(1)) { cg.Chat.SendChatMessage("<ERROR CLEAR>"); } 
+            if (restoreOnFail) initialScript = GetScript(false);
+            SetScript(IMPORT_TEST, false);
+
+            // Import the code.
+            cg.LeftClick(Points.SETTINGS_IMPORT);
+            cg.TextInput(code);
+            cg.KeyPress(Keys.Enter);
+
+            // Test if the import was successful.
+            bool wasSuccessful = !cg.ChatError.WaitForError(1000);
+
+            if (wasSuccessful)
+            {
+                string s = null;
+
+                // Repeatedly call GetScript() until it succesfully copies the script.
+                var copyScriptTask = Task.Run(async () =>
+                {
+                    while (wasSuccessful)
+                    {
+                        s = GetScript(false);
+                        if (s == null || s == IMPORT_TEST)
+                            await Task.Delay(200);
+                        else break;
+                    };
+                });
+                
+                // Give up after 10 seconds.
+                wasSuccessful = copyScriptTask.Wait(10000);
+                if (wasSuccessful) script = s;
+                else
+                {
+                    if (restoreOnFail) SetScript(initialScript);
+                    script = null;
+                }
+            }
+
+            if (goToSettings) cg.GoBack(1);
+
+            return wasSuccessful;
+        }
+
 
         /// <summary>
         /// Sets the description of the game.
@@ -719,6 +770,14 @@ namespace Deltin.CustomGameAutomation
 
             CustomGame.SetClipboard(value);
 
+            // Unactivate and reactivate the Overwatch window to force the Paste Script button to appear.
+            // Send WM_ACTIVATE to Overwatch, with 0 as wParam (meaning to deactivate).
+            User32.PostMessage(cg.OverwatchHandle, 0x0006, 0, 0);
+            Thread.Sleep(10);
+            // Send WM_ACTIVATE to Overwatch, with 2 as wParam (meaning to activate by mouse click).
+            User32.PostMessage(cg.OverwatchHandle, 0x0006, 2, 0);
+            Thread.Sleep(100);
+
             cg.LeftClick(Points.SETTINGS_PASTE, 100);
             Thread.Sleep(100);
 
@@ -741,12 +800,15 @@ namespace Deltin.CustomGameAutomation
         {
             if (goToSettings) cg.GoToSettings();
 
-            // Save the clipboard.
+            // Save the clipboard. TODO: figure out why sometimes modes with many strings end up with their scripts stored in this variable instead of original clipboard.
             string clipboardText = CustomGame.GetClipboard();
+
+            const string testStr = "SCRIPT COPY TEST";
+            CustomGame.SetClipboard(testStr);
 
             cg.LeftClick(Points.SETTINGS_COPY, 100);
 
-            // The clipboard now has the script. Save the clipboard.
+            // The clipboard should now have the script. Save the clipboard.
             string script = CustomGame.GetClipboard();
 
             // Reset the clipboard.
@@ -755,7 +817,8 @@ namespace Deltin.CustomGameAutomation
 
             if (goToSettings) cg.GoBack(1);
 
-            return script;
+            // If for some reason the game's script was not copied (game hanging, in wrong menu, etc), return null.
+            return script == testStr ? null : script;
         }
     }
 
