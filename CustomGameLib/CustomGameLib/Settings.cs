@@ -624,12 +624,11 @@ namespace Deltin.CustomGameAutomation
             cg.KeyPress(Keys.Enter);
 
             // Test if the import was successful.
-            bool wasSuccessful;
+            bool wasSuccessful = true;
             if (testIfSuccessful)
             {
                 wasSuccessful = !cg.ChatError.WaitForError(1000);
             }
-            else wasSuccessful = true;
 
             if (goToSettings) cg.GoBack(1);
 
@@ -651,20 +650,13 @@ namespace Deltin.CustomGameAutomation
             if (goToSettings) cg.GoToSettings();
 
             script = null;
-            string initialScript = null;
 
-            // Create a separator to move the error up so it isn't detected again.
-            if (cg.ChatError.LastMessageIsError(1)) { cg.Chat.SendChatMessage("<ERROR CLEAR>"); } 
+            string initialScript = null;
             if (restoreOnFail) initialScript = GetScript(false);
+
             SetScript(IMPORT_TEST, false);
 
-            // Import the code.
-            cg.LeftClick(Points.SETTINGS_IMPORT);
-            cg.TextInput(code);
-            cg.KeyPress(Keys.Enter);
-
-            // Test if the import was successful.
-            bool wasSuccessful = !cg.ChatError.WaitForError(1000);
+            bool wasSuccessful = Import(code, true, false);
 
             if (wasSuccessful)
             {
