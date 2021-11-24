@@ -658,6 +658,9 @@ namespace Deltin.CustomGameAutomation
 
             if (wasSuccessful)
             {
+                // Save the clipboard.
+                string clipboardText = CustomGame.GetClipboard();
+
                 string s = null;
 
                 // Repeatedly call GetScript() until it succesfully copies the script.
@@ -674,12 +677,16 @@ namespace Deltin.CustomGameAutomation
                 
                 // Give up after timeout.
                 wasSuccessful = copyScriptTask.Wait(timeout);
+
                 if (wasSuccessful) script = s;
-                else
+                else if (restoreOnFail)
                 {
-                    if (restoreOnFail) SetScript(initialScript);
-                    script = null;
+                    SetScript(initialScript);
                 }
+                
+                // Reset the clipboard.
+                if (!string.IsNullOrEmpty(clipboardText))
+                    CustomGame.SetClipboard(clipboardText);
             }
 
             if (goToSettings) cg.GoBack(1);
@@ -789,7 +796,7 @@ namespace Deltin.CustomGameAutomation
         {
             if (goToSettings) cg.GoToSettings();
 
-            // Save the clipboard. TODO: figure out why sometimes modes with many strings end up with their scripts stored in this variable instead of original clipboard.
+            // Save the clipboard.
             string clipboardText = CustomGame.GetClipboard();
 
             const string testStr = "SCRIPT COPY TEST";
