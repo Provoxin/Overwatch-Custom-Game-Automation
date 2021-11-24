@@ -3273,15 +3273,16 @@
             </summary>
             <param name="settings">Settings to change.</param>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.Settings.Import(System.String,System.Boolean)">
+        <member name="M:Deltin.CustomGameAutomation.Settings.Import(System.String,System.Boolean,System.Boolean)">
             <summary>
             Imports a custom game code.
             </summary>
             <param name="code">The code to import.</param>
             <param name="testIfSuccessful">If true, the method will test if importing the code was successful. Will take more time.</param>
+            <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
             <returns>Will return true if importing was successful. Will return false if the code was already loaded or the code does not exist.</returns>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.Settings.ImportScript(System.String,System.String@,System.Boolean,System.Int32)">
+        <member name="M:Deltin.CustomGameAutomation.Settings.ImportScript(System.String,System.String@,System.Boolean,System.Int32,System.Boolean)">
             <summary>
             Imports a custom game code and retrieves its script.
             </summary>
@@ -3289,30 +3290,35 @@
             <param name="script">The variable which the script will be output to. Null on import failure.</param>
             <param name="restoreOnFail">If true, the original script will be restored if the import fails.</param>
             <param name="timeout">How many milliseconds to attempt copying the mode's script for after a succesful import.</param>
+            <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
             <returns>Will return true if importing was successful. Will return false if the code was already loaded or the code does not exist.</returns>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.Settings.SetDescription(System.String)">
+        <member name="M:Deltin.CustomGameAutomation.Settings.SetDescription(System.String,System.Boolean)">
             <summary>
             Sets the description of the game.
             </summary>
             <param name="value">The new description.</param>
+            <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.Settings.GetDescription">
+        <member name="M:Deltin.CustomGameAutomation.Settings.GetDescription(System.Boolean)">
             <summary>
             Gets the description of the game.
             </summary>
+            <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
             <returns>The current description.</returns>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.Settings.SetScript(System.String)">
+        <member name="M:Deltin.CustomGameAutomation.Settings.SetScript(System.String,System.Boolean)">
             <summary>
             Sets the script of the game.
             </summary>
             <param name="value">The new script.</param>
+            <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
         </member>
-        <member name="M:Deltin.CustomGameAutomation.Settings.GetScript">
+        <member name="M:Deltin.CustomGameAutomation.Settings.GetScript(System.Boolean)">
             <summary>
             Gets the script of the game.
             </summary>
+            <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
             <returns>The current script.</returns>
         </member>
     </members>

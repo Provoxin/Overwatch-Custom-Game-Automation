@@ -605,10 +605,9 @@ namespace Deltin.CustomGameAutomation
         /// </summary>
         /// <param name="code">The code to import.</param>
         /// <param name="testIfSuccessful">If true, the method will test if importing the code was successful. Will take more time.</param>
+        /// <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
         /// <returns>Will return true if importing was successful. Will return false if the code was already loaded or the code does not exist.</returns>
-        public bool Import(string code, bool testIfSuccessful = true) => Import(code, testIfSuccessful, true);
-
-        private bool Import(string code, bool testIfSuccessful, bool goToSettings)
+        public bool Import(string code, bool testIfSuccessful = true, bool goToSettings = true)
         {
             if (goToSettings) cg.GoToSettings();
 
@@ -642,10 +641,9 @@ namespace Deltin.CustomGameAutomation
         /// <param name="script">The variable which the script will be output to. Null on import failure.</param>
         /// <param name="restoreOnFail">If true, the original script will be restored if the import fails.</param>
         /// <param name="timeout">How many milliseconds to attempt copying the mode's script for after a succesful import.</param>
+        /// <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
         /// <returns>Will return true if importing was successful. Will return false if the code was already loaded or the code does not exist.</returns>
-        public bool ImportScript(string code, out string script, bool restoreOnFail = true, int timeout = 10000) => ImportScript(code, out script, restoreOnFail, timeout, true);
-
-        private bool ImportScript(string code, out string script, bool restoreOnFail, int timeout, bool goToSettings)
+        public bool ImportScript(string code, out string script, bool restoreOnFail, int timeout = 20000, bool goToSettings = true)
         {
             if (goToSettings) cg.GoToSettings();
 
@@ -674,7 +672,7 @@ namespace Deltin.CustomGameAutomation
                     };
                 });
                 
-                // Give up after 10 seconds.
+                // Give up after timeout.
                 wasSuccessful = copyScriptTask.Wait(timeout);
                 if (wasSuccessful) script = s;
                 else
@@ -694,9 +692,8 @@ namespace Deltin.CustomGameAutomation
         /// Sets the description of the game.
         /// </summary>
         /// <param name="value">The new description.</param>
-        public void SetDescription(string value) => SetDescription(value, true);
-
-        private void SetDescription(string value, bool goToSettings)
+        /// <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
+        public void SetDescription(string value, bool goToSettings = true)
         {
             if (goToSettings) cg.GoToSettings();
 
@@ -719,10 +716,9 @@ namespace Deltin.CustomGameAutomation
         /// <summary>
         /// Gets the description of the game.
         /// </summary>
+        /// <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
         /// <returns>The current description.</returns>
-        public string GetDescription() => GetDescription(true);
-
-        private string GetDescription(bool goToSettings)
+        public string GetDescription(bool goToSettings = true)
         {
             if (goToSettings) cg.GoToSettings();
 
@@ -753,9 +749,8 @@ namespace Deltin.CustomGameAutomation
         /// Sets the script of the game.
         /// </summary>
         /// <param name="value">The new script.</param>
-        public void SetScript(string value) => SetScript(value, true);
-
-        private void SetScript(string value, bool goToSettings)
+        /// <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
+        public void SetScript(string value, bool goToSettings = true)
         {
             if (goToSettings) cg.GoToSettings();
 
@@ -786,10 +781,9 @@ namespace Deltin.CustomGameAutomation
         /// <summary>
         /// Gets the script of the game.
         /// </summary>
+        /// <param name="goToSettings">If true, enter the settings screen at the beginning of the method, and return to lobby screen at the end.</param>
         /// <returns>The current script.</returns>
-        public string GetScript() => GetScript(true);
-
-        private string GetScript(bool goToSettings)
+        public string GetScript(bool goToSettings = true)
         {
             if (goToSettings) cg.GoToSettings();
 
