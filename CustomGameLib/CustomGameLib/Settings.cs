@@ -761,8 +761,10 @@ namespace Deltin.CustomGameAutomation
             // Unactivate and reactivate the Overwatch window to force the Paste Script button to appear.
             // Send WM_ACTIVATE to Overwatch, with 0 as wParam (meaning to deactivate).
             User32.PostMessage(cg.OverwatchHandle, 0x0006, 0, 0);
-            Thread.Sleep(10);
-            // Send WM_ACTIVATE to Overwatch, with 2 as wParam (meaning to activate by mouse click).
+            Thread.Sleep(25);
+            // Send WM_ACTIVATE to Overwatch, with 2 as wParam (meaning to activate by mouse click). For some reason, this must be sent twice to make the button appear.
+            User32.PostMessage(cg.OverwatchHandle, 0x0006, 2, 0);
+            Thread.Sleep(25);
             User32.PostMessage(cg.OverwatchHandle, 0x0006, 2, 0);
             Thread.Sleep(100);
 
